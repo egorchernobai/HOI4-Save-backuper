@@ -17,6 +17,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.watcher = None
         self.is_watching = False
         self.ignore_next_change = False
+        self.last_mtime = None  # Для хранения времени последнего изменения
 
         self.file_pick_button.clicked.connect(self.pick_file)
         self.start_button.clicked.connect(self.on_start)
@@ -47,13 +48,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.path_to_save.endswith(".hoi4"):
             self.statusBar.showMessage("Работаем парни")
             self.path_to_dir = os.path.dirname(self.path_to_save)
+            self.last_mtime = os.path.getmtime(self.path_to_save)
             self.create_backup()
 
+            # Отслеживаем директорию, а не файл!
             if self.watcher:
-                self.watcher.fileChanged.disconnect()
+                self.watcher.directoryChanged.disconnect()
                 del self.watcher
-            self.watcher = QFileSystemWatcher([self.path_to_save])
-            self.watcher.fileChanged.connect(self.on_file_changed)
+            self.watcher = QFileSystemWatcher([self.path_to_dir])
+            self.watcher.directoryChanged.connect(self.on_directory_changed)
             self.is_watching = True
 
             self.start_button.setText("Стоп")
@@ -64,13 +67,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def on_stop(self):
         if self.watcher:
-            self.watcher.fileChanged.disconnect()
+            self.watcher.directoryChanged.disconnect()
             del self.watcher
             self.watcher = None
         self.is_watching = False
         self.statusBar.showMessage("Отслеживание остановлено")
 
-        # Меняем кнопку Stop обратно на Start
         self.start_button.setText("Старт")
         self.start_button.clicked.disconnect()
         self.start_button.clicked.connect(self.on_start)
@@ -83,17 +85,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             shutil.copy2(self.path_to_save, new_path)
             self.statusBar.showMessage(f"Сохранено: {new_path}")
-            self.save_picker_combo_box.addItem(new_filename)
+            # Добавлять только если такого файла нет в combobox
+            if self.save_picker_combo_box.findText(new_filename) == -1:
+                self.save_picker_combo_box.addItem(new_filename)
         except Exception as e:
             self.statusBar.showMessage(f"Ошибка копирования: {e}")
 
-    def on_file_changed(self, path):
+    def on_directory_changed(self, path):
         if self.ignore_next_change:
             self.ignore_next_change = False
             return
 
-        if os.path.exists(path):
-            self.create_backup()
+        file_path = self.path_to_save
+        if os.path.exists(file_path):
+            current_mtime = os.path.getmtime(file_path)
+            if self.last_mtime is None or current_mtime != self.last_mtime:
+                self.last_mtime = current_mtime
+                self.create_backup()
 
     def on_backup(self):
         selected_backup = self.save_picker_combo_box.currentText()
@@ -114,6 +122,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             self.ignore_next_change = True
             shutil.copy2(backup_path, restore_path)
+            self.last_mtime = os.path.getmtime(
+                restore_path)  # Обновляем время изменения
             self.statusBar.showMessage(f"Восстановлено как: {restore_path}")
         except Exception as e:
             self.statusBar.showMessage(f"Ошибка восстановления: {e}")
