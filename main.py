@@ -22,6 +22,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.file_pick_button.clicked.connect(self.pick_file)
         self.start_button.clicked.connect(self.on_start)
         self.backup_button.clicked.connect(self.on_backup)
+        self.pushButton.clicked.connect(self.create_backup)
         self.save_picker_combo_box.currentIndexChanged.connect(
             self.on_combo_change)
 
@@ -73,11 +74,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.is_watching = False
         self.statusBar.showMessage("Отслеживание остановлено")
 
-        self.start_button.setText("Старт")
+        self.start_button.setText("Автоматическое сохранение")
         self.start_button.clicked.disconnect()
         self.start_button.clicked.connect(self.on_start)
 
     def create_backup(self):
+        self.path_to_save = self.path_to_save_line_edit.text()
         base_name = os.path.splitext(os.path.basename(self.path_to_save))[0]
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         new_filename = f"{base_name}_{timestamp}.chzback"

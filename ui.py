@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(480, 180)
+        MainWindow.resize(480, 204)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -20,15 +20,15 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(
             MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(480, 180))
-        MainWindow.setMaximumSize(QtCore.QSize(480, 180))
+        MainWindow.setMinimumSize(QtCore.QSize(480, 200))
+        MainWindow.setMaximumSize(QtCore.QSize(480, 220))
         MainWindow.setToolTip("")
         MainWindow.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setMaximumSize(QtCore.QSize(640, 455))
         self.centralwidget.setObjectName("centralwidget")
         self.layoutWidget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 481, 151))
+        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 481, 179))
         self.layoutWidget.setObjectName("layoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget)
         self.gridLayout.setSizeConstraint(
@@ -36,12 +36,13 @@ class Ui_MainWindow(object):
         self.gridLayout.setContentsMargins(5, 5, 5, 5)
         self.gridLayout.setSpacing(5)
         self.gridLayout.setObjectName("gridLayout")
-        self.start_button = QtWidgets.QPushButton(parent=self.layoutWidget)
-        self.start_button.setObjectName("start_button")
-        self.gridLayout.addWidget(self.start_button, 1, 0, 1, 2)
         self.file_pick_button = QtWidgets.QToolButton(parent=self.layoutWidget)
         self.file_pick_button.setObjectName("file_pick_button")
         self.gridLayout.addWidget(self.file_pick_button, 0, 1, 1, 1)
+        self.junk = QtWidgets.QLabel(parent=self.layoutWidget)
+        self.junk.setText("")
+        self.junk.setObjectName("junk")
+        self.gridLayout.addWidget(self.junk, 3, 0, 1, 1)
         self.path_to_save_line_edit = QtWidgets.QLineEdit(
             parent=self.layoutWidget)
         self.path_to_save_line_edit.setObjectName("path_to_save_line_edit")
@@ -49,14 +50,16 @@ class Ui_MainWindow(object):
         self.save_picker_combo_box = QtWidgets.QComboBox(
             parent=self.layoutWidget)
         self.save_picker_combo_box.setObjectName("save_picker_combo_box")
-        self.gridLayout.addWidget(self.save_picker_combo_box, 3, 0, 1, 2)
+        self.gridLayout.addWidget(self.save_picker_combo_box, 4, 0, 1, 2)
         self.backup_button = QtWidgets.QPushButton(parent=self.layoutWidget)
         self.backup_button.setObjectName("backup_button")
-        self.gridLayout.addWidget(self.backup_button, 4, 0, 1, 2)
-        self.junk = QtWidgets.QLabel(parent=self.layoutWidget)
-        self.junk.setText("")
-        self.junk.setObjectName("junk")
-        self.gridLayout.addWidget(self.junk, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.backup_button, 5, 0, 1, 2)
+        self.pushButton = QtWidgets.QPushButton(parent=self.layoutWidget)
+        self.pushButton.setObjectName("pushButton")
+        self.gridLayout.addWidget(self.pushButton, 2, 0, 1, 2)
+        self.start_button = QtWidgets.QPushButton(parent=self.layoutWidget)
+        self.start_button.setObjectName("start_button")
+        self.gridLayout.addWidget(self.start_button, 1, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusBar = QtWidgets.QStatusBar(parent=MainWindow)
         self.statusBar.setSizeGripEnabled(False)
@@ -70,8 +73,10 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate(
             "MainWindow", "Iron man keeper by ChezZz"))
-        self.start_button.setText(_translate("MainWindow", "Старт"))
         self.file_pick_button.setText(_translate("MainWindow", "..."))
         self.path_to_save_line_edit.setPlaceholderText(
             _translate("MainWindow", "Путь до сохранения"))
-        self.backup_button.setText(_translate("MainWindow", "Бэкап"))
+        self.backup_button.setText(_translate("MainWindow", "Восстановить"))
+        self.pushButton.setText(_translate("MainWindow", "Сохранить"))
+        self.start_button.setText(_translate(
+            "MainWindow", "Автоматическое сохранение"))
