@@ -1,10 +1,11 @@
 from PyQt6 import QtWidgets
+from PyQt6.QtCore import QFileSystemWatcher
 from ui import Ui_MainWindow
 import sys
+import os
 import time
 import shutil
-import os
-from PyQt6.QtCore import QFileSystemWatcher
+from parse import parse_hoi4_bin
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -33,16 +34,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if file_path:
             self.path_to_save_line_edit.setText(file_path)
             self.statusBar.showMessage(f"Файл выбран: {file_path}")
-            self.save_picker_combo_box.clear()
 
+            self.save_picker_combo_box.clear()
             dir_path = os.path.dirname(file_path)
             base_name = os.path.splitext(os.path.basename(file_path))[0]
             added = set()
             for fname in os.listdir(dir_path):
                 if fname.startswith(base_name) and fname.endswith(".chzback"):
-                    if fname not in added:
-                        self.save_picker_combo_box.addItem(fname)
-                        added.add(fname)
+                    full_path = os.path.join(dir_path, fname)
+                    try:
+                        player, date = parse_hoi4_bin(full_path)
+                        display_name = f"{player} {self.from_game_number(date)}"
+                    except Exception:
+                        display_name = fname
+                    if display_name not in added:
+                        self.save_picker_combo_box.addItem(display_name, fname)
+                        added.add(display_name)
 
     def on_start(self):
         self.path_to_save = self.path_to_save_line_edit.text()
@@ -66,6 +73,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             self.statusBar.showMessage("Неверный формат файла")
 
+    @staticmethod
+    def from_game_number(n):
+        base_number = 60759371-12
+        total_hours = n - base_number
+
+        # часы и дни
+        hour = total_hours % 24
+        total_days = total_hours // 24
+
+        # месяцы и дни по игровому календарю
+        months = [31, 28, 31, 30, 31, 30, 31, 31, 30,
+                  31, 30, 31]  # 1936 год (без високосных)
+        year = 1936
+
+        while total_days >= 365:
+            total_days -= 365
+            year += 1
+
+        month = 1
+        for days_in_month in months:
+            if total_days < days_in_month:
+                day = total_days + 1
+                break
+            total_days -= days_in_month
+            month += 1
+
+        return f"{day:02}-{month:02}-{year:04} {hour:02}:00:00"
+
     def on_stop(self):
         if self.watcher:
             self.watcher.directoryChanged.disconnect()
@@ -80,6 +115,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def create_backup(self):
         self.path_to_save = self.path_to_save_line_edit.text()
+        # Исправление: определяем директорию исходного файла
+        if not self.path_to_dir:
+            self.path_to_dir = os.path.dirname(self.path_to_save)
         base_name = os.path.splitext(os.path.basename(self.path_to_save))[0]
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         new_filename = f"{base_name}_{timestamp}.chzback"
@@ -87,9 +125,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             shutil.copy2(self.path_to_save, new_path)
             self.statusBar.showMessage(f"Сохранено: {new_path}")
-            # Добавлять только если такого файла нет в combobox
-            if self.save_picker_combo_box.findText(new_filename) == -1:
-                self.save_picker_combo_box.addItem(new_filename)
+            # Получаем player и date для отображения
+            try:
+                player, date = parse_hoi4_bin(new_path)
+                display_name = f"{player} {self.from_game_number(date)}"
+            except Exception:
+                display_name = new_filename
+            if self.save_picker_combo_box.findText(display_name) == -1:
+                self.save_picker_combo_box.addItem(display_name, new_filename)
         except Exception as e:
             self.statusBar.showMessage(f"Ошибка копирования: {e}")
 
@@ -106,8 +149,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.create_backup()
 
     def on_backup(self):
-        selected_backup = self.save_picker_combo_box.currentText()
-        if not selected_backup:
+        # Получаем имя файла из userData combobox
+        idx = self.save_picker_combo_box.currentIndex()
+        if idx == -1:
+            self.statusBar.showMessage("Не выбран файл для восстановления")
+            return
+
+        backup_filename = self.save_picker_combo_box.itemData(idx)
+        if not backup_filename:
             self.statusBar.showMessage("Не выбран файл для восстановления")
             return
 
@@ -116,16 +165,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 "Не выбран исходный файл для восстановления")
             return
 
-        backup_path = os.path.join(self.path_to_dir, selected_backup)
-
+        backup_path = os.path.join(self.path_to_dir, backup_filename)
         original_filename = os.path.basename(self.path_to_save)
         restore_path = os.path.join(self.path_to_dir, original_filename)
 
         try:
             self.ignore_next_change = True
             shutil.copy2(backup_path, restore_path)
-            self.last_mtime = os.path.getmtime(
-                restore_path)  # Обновляем время изменения
+            self.last_mtime = os.path.getmtime(restore_path)
             self.statusBar.showMessage(f"Восстановлено как: {restore_path}")
         except Exception as e:
             self.statusBar.showMessage(f"Ошибка восстановления: {e}")
