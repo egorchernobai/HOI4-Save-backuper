@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(480, 204)
+        MainWindow.resize(480, 220)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -20,15 +20,20 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(
             MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(480, 200))
+        MainWindow.setMinimumSize(QtCore.QSize(480, 220))
         MainWindow.setMaximumSize(QtCore.QSize(480, 220))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(".\ico.ico"),
+                       QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setToolTip("")
         MainWindow.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setMaximumSize(QtCore.QSize(640, 455))
+        self.centralwidget.setStyleSheet("background-color: #74673e;")
         self.centralwidget.setObjectName("centralwidget")
         self.layoutWidget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 481, 179))
+        self.layoutWidget.setGeometry(QtCore.QRect(0, 0, 481, 191))
         self.layoutWidget.setObjectName("layoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget)
         self.gridLayout.setSizeConstraint(
@@ -37,31 +42,128 @@ class Ui_MainWindow(object):
         self.gridLayout.setSpacing(5)
         self.gridLayout.setObjectName("gridLayout")
         self.file_pick_button = QtWidgets.QToolButton(parent=self.layoutWidget)
+        self.file_pick_button.setMinimumSize(QtCore.QSize(28, 28))
+        self.file_pick_button.setMaximumSize(QtCore.QSize(28, 28))
+        self.file_pick_button.setStyleSheet("QToolButton{\n"
+                                            "border-style: outset;\n"
+                                            "border-width: 2px;\n"
+                                            "border-radius: 6px;\n"
+                                            "border-color: #534928;\n"
+                                            "background-color:#423e23;\n"
+                                            "color:#d1b17f;\n"
+                                            "}\n"
+                                            "\n"
+                                            "QToolButton:pressed{\n"
+                                            "border-style: outset;\n"
+                                            "border-width: 0px;\n"
+                                            "background-color:#423e23;\n"
+                                            "color:#d1b17f;\n"
+                                            "}\n"
+                                            "")
         self.file_pick_button.setObjectName("file_pick_button")
         self.gridLayout.addWidget(self.file_pick_button, 0, 1, 1, 1)
         self.junk = QtWidgets.QLabel(parent=self.layoutWidget)
+        self.junk.setMaximumSize(QtCore.QSize(16777215, 20))
         self.junk.setText("")
         self.junk.setObjectName("junk")
         self.gridLayout.addWidget(self.junk, 3, 0, 1, 1)
         self.path_to_save_line_edit = QtWidgets.QLineEdit(
             parent=self.layoutWidget)
+        self.path_to_save_line_edit.setMinimumSize(QtCore.QSize(0, 28))
+        self.path_to_save_line_edit.setStyleSheet("color: #423923;\n"
+                                                  "background-color: #d0b47d;\n"
+                                                  "font-weight: 600;\n"
+                                                  "\n"
+                                                  "border-style: outset;\n"
+                                                  "border-width: 2px;\n"
+                                                  "border-radius: 6px;\n"
+                                                  "border-color: #74673e;")
         self.path_to_save_line_edit.setObjectName("path_to_save_line_edit")
         self.gridLayout.addWidget(self.path_to_save_line_edit, 0, 0, 1, 1)
         self.save_picker_combo_box = QtWidgets.QComboBox(
             parent=self.layoutWidget)
+        self.save_picker_combo_box.setMinimumSize(QtCore.QSize(0, 28))
+        self.save_picker_combo_box.setStyleSheet("color: #423923;\n"
+                                                 "background-color: #d0b47d;\n"
+                                                 "font-weight: 600;\n"
+                                                 "\n"
+                                                 "border-style: outset;\n"
+                                                 "border-width: 2px;\n"
+                                                 "border-radius: 6px;\n"
+                                                 "border-color: #74673e;")
         self.save_picker_combo_box.setObjectName("save_picker_combo_box")
         self.gridLayout.addWidget(self.save_picker_combo_box, 4, 0, 1, 2)
         self.backup_button = QtWidgets.QPushButton(parent=self.layoutWidget)
+        self.backup_button.setMinimumSize(QtCore.QSize(0, 28))
+        self.backup_button.setStyleSheet("QPushButton{\n"
+                                         "border-style: outset;\n"
+                                         "border-width: 2px;\n"
+                                         "border-radius: 6px;\n"
+                                         "border-color: #534928;\n"
+                                         "background-color:#423e23;\n"
+                                         "color:#d1b17f;\n"
+                                         "font-weight: 600;\n"
+                                         "}\n"
+                                         "\n"
+                                         "QPushButton:pressed{\n"
+                                         "border-style: outset;\n"
+                                         "border-width: 0px;\n"
+                                         "background-color:#423e23;\n"
+                                         "color:#d1b17f;\n"
+                                         "font-weight: 600;\n"
+                                         "}\n"
+                                         "")
         self.backup_button.setObjectName("backup_button")
         self.gridLayout.addWidget(self.backup_button, 5, 0, 1, 2)
         self.pushButton = QtWidgets.QPushButton(parent=self.layoutWidget)
+        self.pushButton.setMinimumSize(QtCore.QSize(0, 28))
+        self.pushButton.setStyleSheet("QPushButton{\n"
+                                      "border-style: outset;\n"
+                                      "border-width: 2px;\n"
+                                      "border-radius: 6px;\n"
+                                      "border-color: #534928;\n"
+                                      "background-color:#423e23;\n"
+                                      "color:#d1b17f;\n"
+                                      "font-weight: 600;\n"
+                                      "}\n"
+                                      "\n"
+                                      "QPushButton:pressed{\n"
+                                      "border-style: outset;\n"
+                                      "border-width: 0px;\n"
+                                      "background-color:#423e23;\n"
+                                      "color:#d1b17f;\n"
+                                      "font-weight: 600;\n"
+                                      "}\n"
+                                      "")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 2, 0, 1, 2)
         self.start_button = QtWidgets.QPushButton(parent=self.layoutWidget)
+        self.start_button.setMinimumSize(QtCore.QSize(0, 28))
+        self.start_button.setStyleSheet("QPushButton{\n"
+                                        "border-style: outset;\n"
+                                        "border-width: 2px;\n"
+                                        "border-radius: 6px;\n"
+                                        "border-color: #534928;\n"
+                                        "background-color:#423e23;\n"
+                                        "color:#d1b17f;\n"
+                                        "font-weight: 600;\n"
+                                        "}\n"
+                                        "\n"
+                                        "QPushButton:pressed{\n"
+                                        "border-style: outset;\n"
+                                        "border-width: 0px;\n"
+                                        "background-color:#423e23;\n"
+                                        "color:#d1b17f;\n"
+                                        "font-weight: 600;\n"
+                                        "}\n"
+                                        "")
         self.start_button.setObjectName("start_button")
         self.gridLayout.addWidget(self.start_button, 1, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusBar = QtWidgets.QStatusBar(parent=MainWindow)
+        self.statusBar.setStyleSheet("background-color: #74673e;\n"
+                                     "color:#d1b17f;\n"
+                                     "font-weight: 600;")
         self.statusBar.setSizeGripEnabled(False)
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)

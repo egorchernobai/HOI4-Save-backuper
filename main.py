@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtGui  # исправленный импорт
 from PyQt6.QtCore import QFileSystemWatcher
 from ui import Ui_MainWindow
 import sys
@@ -26,6 +26,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.create_backup)
         self.save_picker_combo_box.currentIndexChanged.connect(
             self.on_combo_change)
+        icon_path = self.resource_path("ico.ico")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(icon_path),
+                       QtGui.QIcon.Mode.Normal,
+                       QtGui.QIcon.State.Off)
+
+    def resource_path(self, relative_path):
+        if hasattr(sys, '_MEIPASS'):
+            return os.path.join(sys._MEIPASS, relative_path)
+        return os.path.join(os.path.abspath("."), relative_path)
 
     def pick_file(self):
         file_dialog = QtWidgets.QFileDialog(self)
