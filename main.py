@@ -26,11 +26,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.create_backup)
         self.save_picker_combo_box.currentIndexChanged.connect(
             self.on_combo_change)
+        self.clear_Backups.clicked.connect(self.clear_backups)  # <--- добавлено
         icon_path = self.resource_path("ico.ico")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(icon_path),
                        QtGui.QIcon.Mode.Normal,
                        QtGui.QIcon.State.Off)
+
 
     def resource_path(self, relative_path):
         if hasattr(sys, '_MEIPASS'):
@@ -191,6 +193,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.backup = self.save_picker_combo_box.itemText(index)
         self.statusBar.showMessage(f"Выбран: {self.backup}")
 
+    def clear_backups(self):
+        """Удаляет все .chzback-файлы для выбранного сохранения."""
+        self.path_to_save = self.path_to_save_line_edit.text()
+        if not self.path_to_save:
+            self.statusBar.showMessage("Не выбран исходный файл для очистки бэкапов")
+            return
+        dir_path = os.path.dirname(self.path_to_save)
+        base_name = os.path.splitext(os.path.basename(self.path_to_save))[0]
+        deleted = 0
+        for fname in os.listdir(dir_path):
+            if fname.startswith(base_name) and fname.endswith(".chzback"):
+                try:
+                    os.remove(os.path.join(dir_path, fname))
+                    deleted += 1
+                except Exception as e:
+                    self.statusBar.showMessage(f"Ошибка удаления {fname}: {e}")
+        self.save_picker_combo_box.clear()
+        self.statusBar.showMessage(f"Удалено бэкапов: {deleted}")
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
