@@ -1,5 +1,8 @@
 # HOI4-Save-backuper
 
+<img width="1024" height="1024" alt="acf1f49b-7d1e-4b13-a3dd-01e2d9330c0d" src="https://github.com/user-attachments/assets/032af9a2-479b-49ab-bf06-eb4765686ca4" />
+
+
 This program automates backup of your Iron-man saves for Hearts of Iron IV. 
 
 # Содержание
